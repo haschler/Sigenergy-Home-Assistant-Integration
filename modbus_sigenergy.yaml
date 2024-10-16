@@ -15,7 +15,8 @@
 
 # Using platform trigger may give errors in VsCode but it's for compability with HA prior to 2024.10 and not deprecated yet.
 
-modbus:
+sigenergy:
+  modbus:
   - name: Sigen
     type: tcp
     host: !secret sigen_modbus_host_ip
@@ -1798,7 +1799,7 @@ modbus:
 ################################################
 # 'virtual' template sensors for better readability
 ################################################
-template:
+  template:
   - sensor:
       - name: Sigen EMS working mode
         unique_id: sigen_ems_working_mode
@@ -2419,7 +2420,7 @@ template:
 ################################################
 # Create total power sensor
 ################################################
-sensor:
+  sensor:
   - platform: integration
     name: Sigen Accumulated energy consumption
     unique_id: sigen_accumulated_energy_consumption
@@ -2450,91 +2451,91 @@ sensor:
     source: sensor.sigen_inverter_power_usage
     round: 2
 
-utility_meter:
-  sigen_daily_energy_consumption:
-    name: Sigen Daily Energy consumption
-    unique_id: sigen_daily_energy_consumption
-    source: sensor.sigen_accumulated_energy_consumption
-    cycle: daily
+  utility_meter:
+    sigen_daily_energy_consumption:
+      name: Sigen Daily Energy consumption
+      unique_id: sigen_daily_energy_consumption
+      source: sensor.sigen_accumulated_energy_consumption
+      cycle: daily
     
-  sigen_daily_pv_energy_production:
-    name: Sigen Daily PV Energy production
-    unique_id: sigen_daily_pv_energy_production
-    source: sensor.sigen_accumulated_pv_energy_production
-    cycle: daily
+    sigen_daily_pv_energy_production:
+      name: Sigen Daily PV Energy production
+      unique_id: sigen_daily_pv_energy_production
+      source: sensor.sigen_accumulated_pv_energy_production
+      cycle: daily
 
-  sigen_daily_grid_energy_export:
-    name: Sigen Daily Grid Energy export
-    unique_id: sigen_daily_grid_energy_export
-    source: sensor.sigen_accumulated_grid_energy_export
-    cycle: daily
+    sigen_daily_grid_energy_export:
+      name: Sigen Daily Grid Energy export
+      unique_id: sigen_daily_grid_energy_export
+      source: sensor.sigen_accumulated_grid_energy_export
+      cycle: daily
 
-  sigen_daily_grid_energy_import:
-    name: Sigen Daily Grid Energy import
-    unique_id: sigen_daily_grid_energy_import
-    source: sensor.sigen_accumulated_grid_energy_import
-    cycle: daily
+    sigen_daily_grid_energy_import:
+      name: Sigen Daily Grid Energy import
+      unique_id: sigen_daily_grid_energy_import
+      source: sensor.sigen_accumulated_grid_energy_import
+      cycle: daily
     
 ################################################
 # Create input option selectors
 ################################################
-input_select:
-  set_sigen_plant_run_mode:
-    name: Set Sigen Plant Run mode
-    options:
-      - "Enabled"
-      - "Shutdown"
+  input_select:
+    set_sigen_plant_run_mode:
+      name: Set Sigen Plant Run mode
+      options:
+        - "Enabled"
+        - "Shutdown"
 
-  set_sigen_remote_ems:
-    name: Set Sigen Remote EMS
-    options:
-      - "Disabled (default, uses the app)"
-      - "Enabled (Home Assistant control)"
-    icon: mdi:remote
+    set_sigen_remote_ems:
+      name: Set Sigen Remote EMS
+      options:
+        - "Disabled (default, uses the app)"
+        - "Enabled (Home Assistant control)"
+      icon: mdi:remote
 
-  set_sigen_remote_ems_control_mode:
-    name: Set Sigen Remote EMS control mode
-    options:
-      - "PCS remote control"
-      - "Standby"
-      - "Maximum self-consumption (default)"
-      - "Command charging (consume power from the grid first)"
-      - "Command charging (consume power from the PV first)"
-      - "Command discharging (output power from PV first)"
-      - "Command discharging (output power from the battery first)"
-    # icon: mdi:remote
-    icon: mdi:battery-unknown
+    set_sigen_remote_ems_control_mode:
+      name: Set Sigen Remote EMS control mode
+      options:
+        - "PCS remote control"
+        - "Standby"
+        - "Maximum self-consumption (default)"
+        - "Command charging (consume power from the grid first)"
+        - "Command charging (consume power from the PV first)"
+        - "Command discharging (output power from PV first)"
+        - "Command discharging (output power from the battery first)"
+      # icon: mdi:remote
+      icon: mdi:battery-unknown
 
-  set_sigen_run_mode:
-    name: Set Sigen Run mode
-    options:
-      - "Enabled"
-      - "Shutdown"
+    set_sigen_run_mode:
+      name: Set Sigen Run mode
+      options:
+        - "Enabled"
+        - "Shutdown"
 
-  set_sigen_indenpendent_phase_power_control:
-    name: Set Sigen Independent phase power control
-    options:
-      - "Disabled"
-      - "Enabled"
+    set_sigen_indenpendent_phase_power_control:
+      name: Set Sigen Independent phase power control
+      options:
+        - "Disabled"
+        - "Enabled"
 
 ################################################
 # Create text input fields
 ################################################
-input_text:
-  set_sigen_ess_max_charging_limit:
-    name: Set Sigen ESS max charging limit
-    pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
-    icon: mdi:battery-positive
+  input_text:
+    set_sigen_ess_max_charging_limit:
+      name: Set Sigen ESS max charging limit
+      pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
+      icon: mdi:battery-positive
 
-  set_sigen_ess_max_discharging_limit:
-    name: Set Sigen ESS max discharging limit
-    pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
-    icon: mdi:battery-negative
+    set_sigen_ess_max_discharging_limit:
+      name: Set Sigen ESS max discharging limit
+      pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
+      icon: mdi:battery-negative
 
-  set_sigen_pv_max_power_limit:
-    name: Set Sigen PV max power limit
-    pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
-    icon: mdi:solar-power
+    set_sigen_pv_max_power_limit:
+      name: Set Sigen PV max power limit
+      pattern: "^([1-9]\\d*|0)(\\.\\d+)?$"
+      icon: mdi:solar-power
 
   
 
@@ -2556,7 +2557,7 @@ input_text:
 # note: If you change a value by the sliders, it will take up to 60 seconds until the state variables are updated
 # Unfortunately, I could not find a way to "force update" modbus registers, yet...
 ################################################
-automation:
+  automation:
   - id: "automation_sigen_plant_run_mode_input_selector_action"
     alias: "sigen plant run mode input selector action"
     description: "Sigen Plant Start/Stop"
