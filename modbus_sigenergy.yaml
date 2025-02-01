@@ -1,7 +1,7 @@
 # Home Assistant Sigenergy inverter integration
 # https://github.com/TypQxQ/Sigenergy-Inverter-Modbus-Home-Assistant
 # by Andrei Ignat (TypQxQ)
-# last update: 2024-10-12
+# last update: 2025-01-19
 #
 # Adapted from Sungrow SHx Inverter Modbus Home Assistant
 # https://github.com/mkaiser/Sungrow-SHx-Inverter-Modbus-Home-Assistant
@@ -60,7 +60,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Grid sensor reactive power
       # Data collected from grid sensor at grid to system checkpoint
@@ -74,7 +74,7 @@ sigenergy:
         # device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen On/Off grid status code
       # 0: on grid
@@ -253,7 +253,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Plant reactive power
         unique_id: sigen_plant_reactive_power
@@ -266,7 +266,7 @@ sigenergy:
         # device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Plant PV power
         unique_id: sigen_pv_power
@@ -279,7 +279,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Battery power
       # <0: discharging
@@ -294,7 +294,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Available max active power
       # Feed to the ac terminal. Count only the running inverters
@@ -825,7 +825,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen Reactive power
         unique_id: sigendev_reactive_power
@@ -838,7 +838,7 @@ sigenergy:
         # device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen ESS Max. battery charge power
         unique_id: sigendev_ess_max_battery_charge_power
@@ -903,7 +903,7 @@ sigenergy:
         device_class: power
         state_class: measurement
         scale: 0.001
-        scan_interval: 10
+        scan_interval: 5
 
       - name: Sigen ESS battery SOC
         unique_id: sigendev_ess_battery_soc
@@ -1186,7 +1186,7 @@ sigenergy:
         precision: 2
         device_class: power_factor
         state_class: measurement
-        scale: 0.01
+        scale: 0.001
         scan_interval: 10
 
       - name: Sigen OACK count
@@ -1560,7 +1560,7 @@ sigenergy:
         data_type: int32
         precision: 2
         unit_of_measurement: kVar
-        scale: 0.01
+        scale: 0.001
         scan_interval: 60
 
       - name: Sigen Phase B reactive power fixed adjustment target value
@@ -1572,7 +1572,7 @@ sigenergy:
         data_type: int32
         precision: 2
         unit_of_measurement: kVar
-        scale: 0.01
+        scale: 0.001
         scan_interval: 60
 
       - name: Sigen Phase C reactive power fixed adjustment target value
@@ -1584,7 +1584,7 @@ sigenergy:
         data_type: int32
         precision: 2
         unit_of_measurement: kVar
-        scale: 0.01
+        scale: 0.001
         scan_interval: 60
 
       - name: Sigen Phase A active power percentage adjustment target value
@@ -2058,17 +2058,23 @@ sigenergy:
           {% if ((states('sensor.sigen_plant_running_state_code') |int) == 0) %}
             Shutdown
           {% else %}
-            Enabled
+            Unknown code: {{ states('sensor.sigen_plant_running_state_code') }}
           {% endif %}
         icon: mdi:power
 
       - name: Sigen Running state
         unique_id: sigen_running_state
         state: >-
-          {% if ((states('sensor.sigen_running_state_code') |int) == 0) %}
+          {% if ((states('sensor.sigen_plant_running_state_code') |int) == 0) %}
+            Standby
+          {% elif ((states('sensor.sigen_plant_running_state_code') |int) == 1) %}
+            Running
+          {% elif ((states('sensor.sigen_plant_running_state_code') |int) == 2) %}
+            Fault
+          {% elif ((states('sensor.sigen_plant_running_state_code') |int) == 3) %}
             Shutdown
           {% else %}
-            Enabled
+            Unknown code: {{ states('sensor.sigen_plant_running_state_code') }}
           {% endif %}
         icon: mdi:power
 
@@ -2135,32 +2141,31 @@ sigenergy:
 ################################################
 # 'virtual' template sensors for calculations
 ################################################
-      - name: Sigen Grid active power
-        unique_id: sigen_grid_active_power
-        state: >-
-          {{
-            states('sensor.sigen_grid_phase_a_active_power') | float
-            + states('sensor.sigen_grid_phase_b_active_power') | float
-            + states('sensor.sigen_grid_phase_c_active_power') | float
-          }}
-        unit_of_measurement: kW
-        device_class: power
-        state_class: measurement
-        icon: mdi:power
+      # - name: Sigen Grid active power
+      #   unique_id: sigen_grid_active_power
+      #   state: >-
+      #     {{
+      #       states('sensor.sigen_grid_phase_a_active_power') | float
+      #       + states('sensor.sigen_grid_phase_b_active_power') | float
+      #       + states('sensor.sigen_grid_phase_c_active_power') | float
+      #     }}
+      #   unit_of_measurement: kW
+      #   device_class: power
+      #   state_class: measurement
+      #   icon: mdi:power
 
-      - name: Sigen Grid reactive power
-        unique_id: sigen_grid_reactive_power
-        state: >-
-          {{
-            states('sensor.sigen_grid_phase_a_reactive_power') | float
-            + states('sensor.sigen_grid_phase_b_reactive_power') | float
-            + states('sensor.sigen_grid_phase_c_reactive_power') | float
-          }}
-        unit_of_measurement: kVAr
-        # device_class: power
-        state_class: measurement
-        icon: mdi:power
-
+      # - name: Sigen Grid reactive power
+      #   unique_id: sigen_grid_reactive_power
+      #   state: >-
+      #     {{
+      #       states('sensor.sigen_grid_phase_a_reactive_power') | float
+      #       + states('sensor.sigen_grid_phase_b_reactive_power') | float
+      #       + states('sensor.sigen_grid_phase_c_reactive_power') | float
+      #     }}
+      #   unit_of_measurement: kVAr
+      #   # device_class: power
+      #   state_class: measurement
+      #   icon: mdi:power
       - name: Sigen Grid Sensor import power
         unique_id: sigen_grid_sensor_import_power
         state: >-
@@ -2347,11 +2352,10 @@ sigenergy:
         unique_id: sigen_pv_generating
         availability: >-
           {{ 
-          not is_state('sensor.sigen_pv_power', 'unavailable') 
-          and not is_state('sensor.sigen_pv_power', 'unavailable') 
+          not is_state('sensor.sigen_plant_pv_power', 'unavailable') 
           }}
         state: >-
-          {% if states('sensor.sigen_pv_power')|round(0,"ceil") > 0 %}
+          {% if states('sensor.sigen_plant_pv_power')|round(0,"ceil") > 0 %}
             1
           {% else %} 
             0 
@@ -2363,7 +2367,6 @@ sigenergy:
         availability: >-
           {{ 
           not is_state('sensor.sigen_battery_power', 'unavailable') 
-          and not is_state('sensor.sigen_battery_power', 'unavailable') 
           }}
         state: >-
           {% if states('sensor.sigen_battery_power')|float > 0.01 %}
@@ -2378,7 +2381,6 @@ sigenergy:
         availability: >-
           {{ 
           not is_state('sensor.sigen_battery_power', 'unavailable') 
-          and not is_state('sensor.sigen_battery_power', 'unavailable') 
           }}
         state: >-
           {% if states('sensor.sigen_battery_power')|float < -0.01 %}
@@ -2393,7 +2395,6 @@ sigenergy:
         availability: >-
           {{ 
           not is_state('sensor.sigen_grid_sensor_active_power', 'unavailable') 
-          and not is_state('sensor.sigen_grid_sensor_active_power', 'unavailable') 
           }}
         state: >-
           {% if states('sensor.sigen_grid_sensor_active_power')|float > 0.01 %}
@@ -2408,7 +2409,6 @@ sigenergy:
         availability: >-
           {{ 
           not is_state('sensor.sigen_grid_sensor_active_power', 'unavailable') 
-          and not is_state('sensor.sigen_grid_sensor_active_power', 'unavailable') 
           }}
         state: >-
           {% if states('sensor.sigen_grid_sensor_active_power')|float < -0.01 %}
@@ -2425,31 +2425,46 @@ sigenergy:
     name: Sigen Accumulated energy consumption
     unique_id: sigen_accumulated_energy_consumption
     source: sensor.sigen_consumed_power
+    method: trapezoidal
     round: 2
+    max_sub_interval:
+      seconds: 5
 
   - platform: integration
     name: Sigen Accumulated PV energy production
     unique_id: sigen_accumulated_pv_energy_production
     source: sensor.sigen_pv_power
+    method: trapezoidal
     round: 2
+    max_sub_interval:
+      seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Grid energy export
     unique_id: sigen_accumulated_grid_energy_export
     source: sensor.sigen_grid_sensor_export_power
+    method: trapezoidal
     round: 2
+    max_sub_interval:
+      seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Grid energy import
     unique_id: sigen_accumulated_grid_energy_import
     source: sensor.sigen_grid_sensor_import_power
+    method: trapezoidal
     round: 2
+    max_sub_interval:
+      seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Inverter energy usage
     unique_id: sigen_accumulated_inverter_energy_usage
     source: sensor.sigen_inverter_power_usage
+    method: trapezoidal
     round: 2
+    max_sub_interval:
+      seconds: 5
 
   utility_meter:
     sigen_daily_energy_consumption:
@@ -2506,11 +2521,11 @@ sigenergy:
       # icon: mdi:remote
       icon: mdi:battery-unknown
 
-    set_sigen_run_mode:
-      name: Set Sigen Run mode
-      options:
-        - "Enabled"
-        - "Shutdown"
+  # set_sigen_run_mode:
+  #   name: Set Sigen Run mode
+  #   options:
+  #     - "Enabled"
+  #     - "Shutdown"
 
     set_sigen_indenpendent_phase_power_control:
       name: Set Sigen Independent phase power control
@@ -2561,22 +2576,20 @@ sigenergy:
   - id: "automation_sigen_plant_run_mode_input_selector_action"
     alias: "sigen plant run mode input selector action"
     description: "Sigen Plant Start/Stop"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_select.sigen_plant_run_mode
-    condition: []
+    triggers:
+      - trigger: state
+        entity_id: input_select.set_sigen_plant_run_mode
     variables:
-      sg_start: 0x0001
-      sg_stop: 0x0000
+      sg_start: 1
+      sg_stop: 0
     action:
       - action: modbus.write_register
         data_template:
           hub: Sigen
           slave: 247
-          address: 40000 # reg 13000
+          address: 40000
           value: >
-            {% if is_state('input_select.', "Enabled") %}
+            {% if is_state('input_select.set_sigen_plant_run_mode', "Enabled") %}
               {{sg_start}}
             {% else %}
               {{sg_stop}}
@@ -2586,35 +2599,35 @@ sigenergy:
   - id: "automation_sigen_plant_run_mode_input_selector_update"
     alias: "sigen plant run mode input selector update"
     description: "Updates enable/ stops input selector"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_start_stop_code
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_plant_running_state_code
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
-        value_template: "{{ not is_state('sensor.sigen_start_stop', 'unavailable') }}"
+        value_template: "{{ not is_state('sensor.sigen_plant_running_state_code', 'unavailable') }}"
     action:
       - action: input_select.select_option
         target:
           entity_id: input_select.set_sigen_plant_run_mode
         data:
           option: >
-            {% if is_state('sensor.sigen_start_stop', "0") %}
-              Shutdown
-            {% else %}
+            {% if ((states('sensor.sigen_plant_running_state_code') |int) == 0) %}
               Enabled
-            {% endif %}
+            {% elif ((states('sensor.sigen_plant_running_state_code') |int) == 1) %}
+              Enabled
+            {% else %}
+              Shutdown
+            {% endif %}   
     mode: single
 
   - id: "automation_sigen_remote_ems_input_selector_action"
     alias: "sigen remote EMS input selector action"
     description: "Enables/ disables remote EMS"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_select.set_sigen_remote_ems
+    triggers:
+      - trigger: state
+        entity_id: input_select.set_sigen_remote_ems
     condition: []
     variables:
       sg_disable: 0
@@ -2636,11 +2649,10 @@ sigenergy:
   - id: "automation_sigen_remote_ems_input_selector_update"
     alias: "sigen remote EMS input selector update"
     description: "Updates remote EMS input selector"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_remote_ems_code
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_remote_ems_code
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
@@ -2661,8 +2673,8 @@ sigenergy:
   - id: "automation_sigen_remote_ems_control_mode_input_selector_action"
     alias: "sigen remote EMS control mode input selector action"
     description: "Sets the remote EMS control mode"
-    trigger:
-      - platform: state
+    triggers:
+      - trigger: state
         entity_id:
           - input_select.set_sigen_remote_ems_control_mode
     condition: []
@@ -2686,11 +2698,10 @@ sigenergy:
   - id: "automation_sigen_remote_ems_control_mode_input_selector_update"
     alias: "sigen remote EMS control mode input selector update"
     description: "Updates remote EMS control mode input selector"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_remote_ems_control_mode_code
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_remote_ems_control_mode_code
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
@@ -2718,64 +2729,62 @@ sigenergy:
             {% endif %}
     mode: single
 
-  - id: "automation_sigen_run_mode_input_selector_action"
-    alias: "sigen run mode input selector action"
-    description: "Sigen Start/Stop"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_select.sigen_run_mode
-    condition: []
-    variables:
-      sg_start: 0x0001
-      sg_stop: 0x0000
-    action:
-      - action: modbus.write_register
-        data_template:
-          hub: Sigen
-          slave: 247
-          address: 40000 # reg 13000
-          value: >
-            {% if is_state('input_select.', "Enabled") %}
-              {{sg_start}}
-            {% else %}
-              {{sg_stop}}
-            {% endif %}
-    mode: single
+  # - id: "automation_sigen_run_mode_input_selector_action"
+  #   alias: "sigen run mode input selector action"
+  #   description: "Sigen Start/Stop"
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - input_select.sigen_run_mode
+  #   condition: []
+  #   variables:
+  #     sg_start: 0x0001
+  #     sg_stop: 0x0000
+  #   action:
+  #     - action: modbus.write_register
+  #       data_template:
+  #         hub: Sigen
+  #         slave: 247
+  #         address: 40000 # reg 13000
+  #         value: >
+  #           {% if is_state('input_select.', "Enabled") %}
+  #             {{sg_start}}
+  #           {% else %}
+  #             {{sg_stop}}
+  #           {% endif %}
+  #   mode: single
 
-  - id: "automation_sigen_run_mode_input_selector_update"
-    alias: "sigen run mode input selector update"
-    description: "Updates enable/ stops input selector"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_start_stop_code
-      - platform: homeassistant
-        event: start
-    condition:
-      - condition: template
-        value_template: "{{ not is_state('sensor.sigen_start_stop', 'unavailable') }}"
-    action:
-      - action: input_select.select_option
-        target:
-          entity_id: input_select.set_sigen_run_mode
-        data:
-          option: >
-            {% if is_state('sensor.sigen_start_stop', "0") %}
-              Shutdown
-            {% else %}
-              Enabled
-            {% endif %}
-    mode: single
+  # - id: "automation_sigen_run_mode_input_selector_update"
+  #   alias: "sigen run mode input selector update"
+  #   description: "Updates enable/ stops input selector"
+  #   trigger:
+  #     - platform: state
+  #       entity_id:
+  #         - sensor.sigen_start_stop_code
+  #     - platform: homeassistant
+  #       event: start
+  #   condition:
+  #     - condition: template
+  #       value_template: "{{ not is_state('sensor.sigen_start_stop', 'unavailable') }}"
+  #   action:
+  #     - action: input_select.select_option
+  #       target:
+  #         entity_id: input_select.set_sigen_run_mode
+  #       data:
+  #         option: >
+  #           {% if is_state('sensor.sigen_start_stop', "0") %}
+  #             Shutdown
+  #           {% else %}
+  #             Enabled
+  #           {% endif %}
+  #   mode: single
 
   - id: "automation_sigen_indenpendent_phase_power_control_input_selector_action"
     alias: "sigen indenpendent phase power control input selector action"
     description: "Sigen Independent phase power control action"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_select.set_sigen_indenpendent_phase_power_control
-    condition: []
+    triggers:
+      - trigger: state
+        entity_id: input_select.set_sigen_indenpendent_phase_power_control
     variables:
       sg_disable: 0
       sg_enable: 1
@@ -2796,11 +2805,10 @@ sigenergy:
   - id: "automation_sigen_indenpendent_phase_power_control_input_selector_update"
     alias: "sigen indenpendent phase power control input selector update"
     description: "Updates indenpendent phase power control input selector"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_independent_phase_power_control_code
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_independent_phase_power_control_code
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
@@ -2821,11 +2829,9 @@ sigenergy:
   - id: "automation_sigen_ess_max_charging_limit_input_text_action"
     alias: "sigen ESS max charging limit input text action"
     description: "Sigen ESS max charging limit action"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_text.set_sigen_ess_max_charging_limit
-    condition: []
+    triggers:
+      - trigger: state
+        entity_id: input_text.set_sigen_ess_max_charging_limit
     action:
       - action: modbus.write_register
         data_template:
@@ -2844,11 +2850,10 @@ sigenergy:
   - id: "automation_sigen_ess_max_charging_limit_input_text_update"
     alias: "sigen ESS max charging limit input text update"
     description: "Updates ESS max charging limit input text"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_ess_max_charging_limit
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_ess_max_charging_limit
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
@@ -2864,11 +2869,9 @@ sigenergy:
   - id: "automation_sigen_ess_max_discharging_limit_input_text_action"
     alias: "sigen ESS max discharging limit input text action"
     description: "Sigen ESS max discharging limit action"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_text.set_sigen_ess_max_discharging_limit
-    condition: []
+    triggers:
+      - trigger: state
+        entity_id: input_text.set_sigen_ess_max_discharging_limit
     action:
       - action: modbus.write_register
         data_template:
@@ -2887,11 +2890,10 @@ sigenergy:
   - id: "automation_sigen_ess_max_discharging_limit_input_text_update"
     alias: "sigen ESS max discharging limit input text update"
     description: "Updates ESS max discharging limit input text"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_ess_max_discharging_limit
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_ess_max_discharging_limit
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
@@ -2907,11 +2909,9 @@ sigenergy:
   - id: "automation_sigen_pv_max_power_limit_input_text_action"
     alias: "sigen PV max power limit input text action"
     description: "Sigen PV max power limit action"
-    trigger:
-      - platform: state
-        entity_id:
-          - input_text.set_sigen_pv_max_power_limit
-    condition: []
+    triggers:
+      - trigger: state
+        entity_id: input_text.set_sigen_pv_max_power_limit
     action:
       - action: modbus.write_register
         data_template:
@@ -2930,11 +2930,10 @@ sigenergy:
   - id: "automation_sigen_pv_max_power_limit_input_text_update"
     alias: "sigen PV max power limit input text update"
     description: "Updates PV max power limit input text"
-    trigger:
-      - platform: state
-        entity_id:
-          - sensor.sigen_pv_max_power_limit
-      - platform: homeassistant
+    triggers:
+      - trigger: state
+        entity_id: sensor.sigen_pv_max_power_limit
+      - trigger: homeassistant
         event: start
     condition:
       - condition: template
