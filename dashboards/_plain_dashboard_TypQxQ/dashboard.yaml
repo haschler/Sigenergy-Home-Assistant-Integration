@@ -143,63 +143,63 @@ views:
         logarithmic_scale: false
       - type: energy-distribution
         link_dashboard: true
-    badges:
-      - type: entity
-        entity: sensor.sigen_general_alarm1
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_general_alarm1
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_general_alarm2
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_general_alarm2
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_general_alarm3
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_general_alarm3
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_general_alarm4
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_general_alarm4
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_alarm1
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_alarm1
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_alarm2
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_alarm2
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_alarm3
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_alarm3
-            state_not: No Alarm
-      - type: entity
-        entity: sensor.sigen_alarm4
-        color: red
-        visibility:
-          - condition: state
-            entity: sensor.sigen_alarm4
-            state_not: No Alarm
+    # badges:
+    #   - type: entity
+    #     entity: sensor.sigen_general_alarm1
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_general_alarm1
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_general_alarm2
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_general_alarm2
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_general_alarm3
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_general_alarm3
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_general_alarm4
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_general_alarm4
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_alarm1
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_alarm1
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_alarm2
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_alarm2
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_alarm3
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_alarm3
+    #         state_not: No Alarm
+    #   - type: entity
+    #     entity: sensor.sigen_alarm4
+    #     color: red
+    #     visibility:
+    #       - condition: state
+    #         entity: sensor.sigen_alarm4
+    #         state_not: No Alarm
   - title: EMS Control
     icon: mdi:solar-power
     cards:

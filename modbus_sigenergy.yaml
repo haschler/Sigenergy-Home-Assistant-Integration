@@ -2427,8 +2427,8 @@ sigenergy:
     source: sensor.sigen_consumed_power
     method: trapezoidal
     round: 2
-    max_sub_interval:
-      seconds: 5
+    # max_sub_interval:
+    #   seconds: 5
 
   - platform: integration
     name: Sigen Accumulated PV energy production
@@ -2436,8 +2436,8 @@ sigenergy:
     source: sensor.sigen_pv_power
     method: trapezoidal
     round: 2
-    max_sub_interval:
-      seconds: 5
+    # max_sub_interval:
+    #   seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Grid energy export
@@ -2445,8 +2445,8 @@ sigenergy:
     source: sensor.sigen_grid_sensor_export_power
     method: trapezoidal
     round: 2
-    max_sub_interval:
-      seconds: 5
+    # max_sub_interval:
+    #   seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Grid energy import
@@ -2454,8 +2454,8 @@ sigenergy:
     source: sensor.sigen_grid_sensor_import_power
     method: trapezoidal
     round: 2
-    max_sub_interval:
-      seconds: 5
+    # max_sub_interval:
+    #   seconds: 5
 
   - platform: integration
     name: Sigen Accumulated Inverter energy usage
@@ -2463,8 +2463,8 @@ sigenergy:
     source: sensor.sigen_inverter_power_usage
     method: trapezoidal
     round: 2
-    max_sub_interval:
-      seconds: 5
+    # max_sub_interval:
+    #   seconds: 5
 
   utility_meter:
     sigen_daily_energy_consumption:
